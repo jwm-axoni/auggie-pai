@@ -1,0 +1,73 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What This Is
+
+The `~/.augment` directory is the configuration home for **Augment AI (Auggie CLI)**, enhanced with the **PAI system v3.0-auggie** — an adaptation of Daniel Miessler's [Personal AI Infrastructure (PAI)](https://github.com/danielmiessler/PAI) v4.0 (Algorithm v3.7.0), tailored for the Augment CLI environment.
+
+## PAI System Architecture
+
+### Core Algorithm (`rules/algorithm.md`)
+The PAI Algorithm v3.0-auggie (synced with PAI v3.7.0) is injected into every prompt (all user rules auto-apply). It enforces a 7-phase loop:
+
+**OBSERVE → THINK → PLAN → BUILD → EXECUTE → VERIFY → LEARN**
+
+- **Mode Selection**: NATIVE (quick <2min) | ALGORITHM (complex) | MINIMAL (greetings)
+- **ISC (Ideal State Criteria)**: Atomic, binary-testable criteria with the Splitting Test
+- **ISC Count Gate**: Criteria ranges per effort tier (Standard: 8-16, Extended: 16-32, etc.)
+- **Capability Selection**: Skills selected during OBSERVE, applied during BUILD/EXECUTE
+- **PRD as System of Record**: Written to `.prd/PRD-{YYYYMMDD}-{slug}.md`
+- **Memory Capture**: LEARN phase writes to `MEMORY/LEARNING/reflections.jsonl`
+
+### Skills (`skills/{name}/SKILL.md`)
+Each skill is a subdirectory containing a `SKILL.md` with `name`/`description` frontmatter (agentskills.io format). The algorithm reads and applies them during BUILD/EXECUTE.
+
+| Category | Skills |
+|----------|--------|
+| **Thinking** | first-principles, council, red-team, iterative-depth, science |
+| **Research** | quick-research, standard-research, deep-investigation, extract-knowledge |
+| **Security** | recon, web-assessment, threat-model, prompt-injection |
+| **Content** | extract-wisdom |
+| **Personas** | engineer (Marcus Webb), architect (Serena Blackwood), qa-tester (Quinn Torres), pentester (Rook Blackburn) |
+
+### Slash Commands (`commands/`)
+Invocable via `/<name>` in Auggie:
+- `/think <skill> <topic>` — Apply a thinking methodology
+- `/research <mode> <topic>` — Run research (quick/standard/deep/extract)
+- `/assess <type> <target>` — Security assessment (recon/web/threat-model/prompt-injection)
+- `/agent <persona> <task>` — Adopt an agent persona
+- `/memory <operation>` — Memory operations (read/corrections/patterns/status/reflect)
+- `/status` — Show PAI system status
+
+### Hooks (in `settings.json`)
+- **SessionStart**: Loads `MEMORY/STATE/current-work.json` at session start
+- **Stop**: Prompts reflection writing if LEARN phase was skipped
+
+### Memory System (`MEMORY/`)
+- `LEARNING/reflections.jsonl` — LEARN phase reflections (auto-prompted by Stop hook)
+- `LEARNING/corrections.jsonl` — User corrections captured during any phase
+- `LEARNING/patterns.md` — Synthesized patterns from reflections
+- `STATE/current-work.json` — Active work pointer (loaded by SessionStart hook)
+- `RESEARCH/` — Persistent research output archive
+
+### User Configuration (`USER/`)
+- `ABOUTME.md` — Work identity (fill in your details)
+- `AISTEERINGRULES.md` — AI behavior preferences
+- `WORK/` — Company context and active project registry
+
+### Rules (`rules/`)
+All user rules are injected into every prompt regardless of frontmatter:
+- `algorithm.md` — Core 7-phase algorithm (~370 lines)
+- `security.md` — Security guidelines (~76 lines)
+- `context-routing.md` — Topic-to-file routing table (~33 lines)
+
+## MCP Servers (configure in settings.json)
+Add your own MCP servers. Example:
+- **claude-browser**: Playwright browser automation with your company service URLs (SSO, ticketing, wiki, monitoring)
+- **monitoring**: Monitoring API (HTTP/OAuth)
+
+## Security Notes
+- `settings.json` contains plaintext credentials in MCP env vars — do not expose
+- `session.json` contains API access token — do not expose
+- Both files are excluded from git via `.gitignore`

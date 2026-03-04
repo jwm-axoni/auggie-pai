@@ -1,0 +1,53 @@
+# ═══════════════════════════════════════════
+# PAI for Augment CLI — .gitignore
+# ═══════════════════════════════════════════
+
+# User-specific config
+CLAUDE.md
+
+# Secrets & credentials
+settings.json
+session.json
+.env
+.env.*
+
+# User-specific state
+.auggie.json
+prompt-history.jsonl
+
+# Session data (ephemeral, user-specific)
+sessions/
+
+# Checkpoint documents (large, user-specific)
+checkpoint-documents/
+
+# Binaries (platform-specific)
+binaries/
+
+# Task storage (runtime state)
+task-storage/
+
+# Backup files
+*.backup
+*.backup2
+*.backup3
+*.backup4
+settings.json.backup*
+
+# Claude Code local config
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Memory state files (user-specific runtime)
+MEMORY/STATE/current-work.json
+MEMORY/LEARNING/reflections.jsonl
+MEMORY/LEARNING/corrections.jsonl
+MEMORY/RESEARCH/
+
+# PRD working files (session-specific)
+.prd/PRD-*.md
+!.prd/README.md
+!.prd/templates/
