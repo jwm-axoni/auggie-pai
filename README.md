@@ -176,36 +176,81 @@ Good: "Draft status stored in frontmatter YAML field"
 
 ## Installation
 
-### 1. Clone
+### Fresh Install (No Existing Auggie Config)
 
 ```bash
-# Back up existing config if you have one
-[ -d ~/.augment ] && mv ~/.augment ~/.augment.backup
-
 git clone https://github.com/jwm-axoni/auggie-pai.git ~/.augment
-```
-
-### 2. Setup
-
-```bash
 cd ~/.augment && ./setup.sh
 ```
 
-### 3. Configure
+The setup script creates all directories, initializes memory files, and copies `settings.json.example` to `settings.json`. Edit it with your credentials and paths.
 
-Edit these files with your details:
+### Existing Auggie Users
+
+Already have Auggie CLI configured with your own `settings.json`, MCP servers, and sessions? This merges PAI into your existing setup without touching any of that.
+
+```bash
+# Back up first
+cp -r ~/.augment ~/.augment.backup
+
+# Clone to a temp location
+git clone https://github.com/jwm-axoni/auggie-pai.git /tmp/auggie-pai
+
+# Copy PAI components into your existing config
+cp -r /tmp/auggie-pai/rules ~/.augment/
+cp -r /tmp/auggie-pai/skills ~/.augment/
+cp -r /tmp/auggie-pai/commands ~/.augment/
+cp -r /tmp/auggie-pai/USER ~/.augment/
+cp -r /tmp/auggie-pai/.prd ~/.augment/
+cp /tmp/auggie-pai/CLAUDE.md ~/.augment/
+cp /tmp/auggie-pai/settings.json.example ~/.augment/
+
+# Run setup to create memory directories
+cd ~/.augment && bash /tmp/auggie-pai/setup.sh
+
+# Clean up
+rm -rf /tmp/auggie-pai
+```
+
+Then add these hooks to your existing `settings.json`:
+
+```json
+"hooks": {
+  "SessionStart": [{
+    "hooks": [{
+      "type": "command",
+      "command": "cat $HOME/.augment/MEMORY/STATE/current-work.json"
+    }]
+  }],
+  "Stop": [{
+    "hooks": [{
+      "type": "command",
+      "command": "echo '{\"reminder\": \"check_reflection\"}' >> $HOME/.augment/MEMORY/STATE/stop-reminders.log 2>/dev/null || true"
+    }]
+  }]
+}
+```
+
+> If you already have a `hooks` key, merge these into your existing hooks object.
+
+### Configure
 
 | File | Purpose |
 |------|---------|
 | `settings.json` | MCP servers, credentials, indexing paths |
 | `USER/ABOUTME.md` | Your role, expertise, timezone |
 | `USER/AISTEERINGRULES.md` | AI behavior preferences |
-| `USER/WORK/AXONIUS.md` | Company context (rename to your company) |
-| `USER/WORK/PROJECTS.md` | Active project registry |
+| `USER/WORK/` | Company context and active projects |
 
-### 4. Use
+### Verify It Works
 
-Launch Augment CLI. The Algorithm loads automatically. Type naturally — mode selection happens automatically.
+Launch Augment CLI and type: `analyze the pros and cons of Redis vs Memcached`
+
+You should see the Algorithm activate with:
+- `♻︎ PAI ALGORITHM (v3.0-auggie)` header
+- Reverse engineering output
+- ISC criteria generation
+- All 7 phases executed
 
 ---
 
