@@ -1,0 +1,56 @@
+{
+  "indexingAllowDirs": [
+    "/path/to/your/code",
+    "/path/to/your/projects"
+  ],
+  "model": "sonnet4.6",
+  "mcpServers": {
+    "claude-browser": {
+      "type": "stdio",
+      "command": "/bin/bash",
+      "args": [
+        "-c",
+        "cd '/path/to/claude-code-nightly-automation' && /path/to/uv run --python 3.11 --with 'mcp[cli]' --with playwright --with python-dotenv python '/path/to/claude_browser_mcp.py'"
+      ],
+      "env": {
+        "USER_AGENT": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+        "OKTA_PASSWORD": "{YOUR_OKTA_PASSWORD}",
+        "AXONIUS_BASE_URL": "https://your-company.okta.com/",
+        "ZENDESK_URL": "https://your-company.zendesk.com",
+        "DOCS_URL": "https://docs.your-company.com",
+        "JIRA_URL": "https://your-company.atlassian.net",
+        "INTERNAL_WIKI_URL": "https://wiki.your-company.com/",
+        "MONITORING_URL": "https://monitoring.your-company.com/"
+      }
+    },
+    "monitoring": {
+      "type": "http",
+      "url": "https://api.your-monitoring-service.com/mcp",
+      "auth": {
+        "type": "oauth"
+      }
+    }
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat $HOME/.augment/MEMORY/STATE/current-work.json"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"reminder\": \"check_reflection\", \"time\": \"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'\"}' >> $HOME/.augment/MEMORY/STATE/stop-reminders.log 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}

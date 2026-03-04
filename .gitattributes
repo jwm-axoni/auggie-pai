@@ -1,0 +1,5 @@
+# Override GitHub language detection
+# Show as Markdown (documentation project) rather than Shell
+*.md linguist-detectable=true
+*.sh linguist-detectable=false
+setup.sh linguist-vendored=true
