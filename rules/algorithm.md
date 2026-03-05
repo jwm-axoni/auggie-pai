@@ -9,6 +9,12 @@ alwaysApply: true
 
 ---
 
+## MANDATORY — READ FIRST
+
+Every response MUST use exactly one mode (MINIMAL, NATIVE, or ALGORITHM). Your FIRST output MUST be the mode header. No freeform output before it. No skipping this step. If you catch yourself responding without a mode header, STOP and restart with the correct format. This applies to EVERY message — first message, follow-ups, mid-conversation, always. "Freeform mode" does not exist.
+
+---
+
 ## MODE SELECTION (Evaluate First)
 
 | Mode | When | Format |
